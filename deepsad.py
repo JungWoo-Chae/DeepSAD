@@ -54,7 +54,7 @@ class DeepSAD():
 #             self.decoder =MNIST_LeNet()
     
     def init_c(self, eps = 0.1):
-
+        print('Initialize center c')
         n = 0
         c = tf.zeros(self.model.rep_dim)
         for inputs, labels, semi in self.train_dataset:
@@ -81,9 +81,10 @@ class DeepSAD():
         
         self.init_c()
         for epoch in range(epochs):
-            print(epoch)
             for inputs, _, semi_labels in self.train_dataset:
-                self.train_step(inputs, semi_labels)
+                loss = self.train_step(inputs, semi_labels)
+            
+            print(f"epoch: {epoch+1}/{epochs}, loss: {loss}")
             
         return
     
@@ -97,8 +98,11 @@ class DeepSAD():
         gradients = tape.gradient(loss,  self.model.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients,  self.model.trainable_variables))
         
+        return loss
+        
     def test(self, test_dataset):
         
+        print('Starting Test')
         label_list=[]
         score_list=[]
         
@@ -112,4 +116,4 @@ class DeepSAD():
         scores = tf.concat(score_list,axis=0).numpy()
         self.test_auc = roc_auc_score(labels, scores)
         
-        print(self.test_auc)
+        print('Test AUC: {:.2f}%'.format(100. * self.test_auc))
