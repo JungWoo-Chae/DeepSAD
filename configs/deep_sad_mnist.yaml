@@ -1,0 +1,43 @@
+# dataset
+dataset_name: 'mnist' # ['mnist','cifar10']
+normal_class: [0]
+known_outlier_class: [1,2]
+ratio_known_normal: 0.0
+ratio_known_outlier: 0.01
+ratio_pollution: 0.1
+
+# General setting
+batch_size: 128
+eta: 1
+
+
+# training setting
+epochs: 100
+model_name: 'mnist_LeNet'
+lr: 0.001
+
+input_size: 640
+backbone_type: 'ResNet50'  # 'ResNet50', 'MobileNetV2'
+sub_name: 'retinaface_res50'
+
+# training dataset
+dataset_path: './data/widerface_train_bin.tfrecord'
+dataset_len: 12880  # number of training samples
+using_bin: True
+using_flip: True
+using_distort: True
+
+# testing dataset
+testing_dataset_path: './data/widerface/val'
+
+# network
+out_channel: 256
+
+# anchor setting
+min_sizes: [[16, 32], [64, 128], [256, 512]]
+steps: [8, 16, 32]
+match_thresh: 0.45
+ignore_thresh: 0.3
+variances: [0.1, 0.2]
+clip: False
+
