@@ -1,11 +1,11 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.datasets import mnist, cifar10
+from tensorflow.keras.datasets import cifar10
 from .preprocessing import create_semisupervised_setting, load_tfdataset
 
 
-def load_mnist(cfg):
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+def load_cifar10(cfg):
+    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
      
     normal_classes = tuple(cfg['normal_class'])
     known_outlier_classes = tuple(cfg['known_outlier_class'])
@@ -20,9 +20,9 @@ def load_mnist(cfg):
     idx, _, semi_targets = create_semisupervised_setting(y_train, normal_classes,
                                                              outlier_classes, known_outlier_classes,
                                                              ratio_known_normal, ratio_known_outlier, ratio_pollution)
-        
-    y_train[idx] = np.array([int(x in outlier_classes) for x in  y_train[idx]])
-    y_test = np.array([int(x in outlier_classes) for x in  y_test])
+    
+    y_train[idx] = np.array([[int(x in outlier_classes)] for x in  y_train[idx]])
+    y_test = np.array([[int(x in outlier_classes)] for x in  y_test])
     train_data = load_tfdataset(cfg, x_train[idx], y_train[idx], semi_targets)
     test_data = load_tfdataset(cfg, x_test, y_test, np.zeros_like(y_test))
     

@@ -11,7 +11,7 @@ from deepsad import DeepSAD
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg_path', type=str, default='./configs/deep_sad_mnist.yaml', help='config_path')
+    parser.add_argument('--cfg_path', type=str, default='./configs/deep_sad_cifar10.yaml', help='config_path')
     
     return parser.parse_args()
     

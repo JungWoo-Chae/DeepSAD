@@ -1,6 +1,7 @@
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 from networks.mnist_LeNet import MNIST_LeNet
+from networks.cifar10_LeNet import CIFAR10_LeNet
 
 class DeepSAD():
     def __init__(self, cfg):
@@ -44,6 +45,8 @@ class DeepSAD():
        
         if self.model_name  == 'mnist_LeNet':
             self.model = MNIST_LeNet()
+        if self.model_name  == 'cifar10_LeNet':
+            self.model = CIFAR10_LeNet()
             
     def build_decoder(self, net_name):
         '''
