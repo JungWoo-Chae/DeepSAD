@@ -1,9 +1,9 @@
 # dataset
 dataset_name: 'mnist' # ['mnist','cifar10']
 normal_class: [0]
-known_outlier_class: [1,2]
-ratio_known_normal: 0.0
-ratio_known_outlier: 0.01
+known_outlier_class: [1]
+ratio_known_normal: 0.05
+ratio_known_outlier: 0.05
 ratio_pollution: 0.1
 
 # General setting
@@ -15,3 +15,8 @@ eta: 1
 epochs: 100
 model_name: 'mnist_LeNet'
 lr: 0.001
+
+# AE training setting
+pretrain: TRUE
+ae_epochs: 50
+ae_lr: 0.001

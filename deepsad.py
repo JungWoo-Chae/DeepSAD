@@ -1,7 +1,7 @@
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
-from networks.mnist_LeNet import MNIST_LeNet
-from networks.cifar10_LeNet import CIFAR10_LeNet
+from networks.mnist_LeNet import MNIST_LeNet, MNIST_LeNet_decoder
+from networks.cifar10_LeNet import CIFAR10_LeNet, CIFAR10_LeNet_decoder
 
 class DeepSAD():
     def __init__(self, cfg):
@@ -52,9 +52,10 @@ class DeepSAD():
         '''
         build decoder part which can match with model
         '''
-        pass
-#         if net_name == 'mnist_LeNet':
-#             self.decoder =MNIST_LeNet()
+        if self.model_name  == 'mnist_LeNet':
+            self.decoder = MNIST_LeNet_decoder()
+        if self.model_name  == 'cifar10_LeNet':
+            self.decoder = CIFAR10_LeNet_decoder()
     
     def init_c(self, eps = 0.1):
         print('Initialize center c')
@@ -72,12 +73,11 @@ class DeepSAD():
         self.c = c
    
     
-    def train(self, train_dataset, lr, epochs, batch_size, beta1=0.9, beta2=0.999):
+    def train(self, train_dataset, lr, epochs, beta1=0.9, beta2=0.999):
         
         self.train_dataset = train_dataset
         self.lr = lr
         self.epochs = epochs
-        self.batch_size = batch_size
         self.beta1 = beta1
         self.beta2 = beta2
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr, beta_1=self.beta1, beta_2=self.beta2, epsilon=1e-08)
@@ -120,3 +120,28 @@ class DeepSAD():
         self.test_auc = roc_auc_score(labels, scores)
         
         print('Test AUC: {:.2f}%'.format(100. * self.test_auc))
+        
+    def pretrain(self, train_dataset, lr, epochs, beta1=0.9, beta2=0.999):
+        
+        print('Starting Pretrain')
+        self.train_dataset = train_dataset
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=lr, beta_1=beta1, beta_2=beta2, epsilon=1e-08)
+        self.build_decoder(self.model_name)
+        for epoch in range(epochs):
+            for inputs, _, semi_labels in self.train_dataset:
+                loss = self.pretrain_step(inputs, semi_labels)
+            print(f"epoch: {epoch+1}/{epochs}, ae_loss: {loss}")
+                
+    
+    def pretrain_step(self, inputs, semi_labels):
+        
+        mse = tf.keras.losses.MeanSquaredError()
+        with tf.GradientTape() as tape:
+            embeds = self.model(inputs, training=True)
+            outputs = self.decoder(embeds, training=True)
+            loss = mse(inputs, outputs)
+
+        gradients = tape.gradient(loss,  self.model.trainable_variables + self.decoder.trainable_variables)
+        self.optimizer.apply_gradients(zip(gradients,  self.model.trainable_variables+self.decoder.trainable_variables))
+        
+        return loss

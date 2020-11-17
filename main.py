@@ -11,7 +11,7 @@ from deepsad import DeepSAD
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg_path', type=str, default='./configs/deep_sad_cifar10.yaml', help='config_path')
+    parser.add_argument('--cfg_path', type=str, default='./configs/deep_sad_mnist.yaml', help='config_path')
     
     return parser.parse_args()
     
@@ -37,8 +37,12 @@ def main():
     # load train & test set
     train_dataset, test_dataset = load_dataset(cfg)
     
+    # pretrain
+    if cfg['pretrain']:
+        model.pretrain(train_dataset, cfg['ae_lr'], cfg['ae_epochs'])
+    
     # train 
-    model.train(train_dataset, cfg['lr'], cfg['epochs'], cfg['batch_size'])
+    model.train(train_dataset, cfg['lr'], cfg['epochs'])
     
     # test
     model.test(test_dataset)

@@ -1,10 +1,10 @@
 # dataset
 dataset_name: 'cifar10' # ['mnist','cifar10']
 normal_class: [0]
-known_outlier_class: [1,2]
-ratio_known_normal: 0.0
-ratio_known_outlier: 0.01
-ratio_pollution: 0.1
+known_outlier_class: [1]
+ratio_known_normal: 0.05
+ratio_known_outlier: 0.05
+ratio_pollution: 0.0
 
 # General setting
 batch_size: 128
@@ -12,6 +12,11 @@ eta: 1
 
 
 # training setting
-epochs: 100
+epochs: 50
 model_name: 'cifar10_LeNet'
 lr: 0.001
+
+# AE training setting
+pretrain: TRUE
+ae_epochs: 50
+ae_lr: 0.001
